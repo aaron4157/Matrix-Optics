@@ -6,4 +6,4 @@ Assembly these blocks and find ray modification after any lens system!
 Notion:
 r = height(y) from central axis
 th = slope; it becomes negative as ray goes down-ward and cross the central axis.
-a ball-shapped lens(n>1) is defined having positive curvature.
+Curvarure is defined out-ward. Ex. a ball lens is defined having positive curvature on both sides.
