@@ -96,7 +96,12 @@ class Slab(Component):
             return True
 
 class lens(Component):
-    """docstring for lens."""
+    """A general thick lens. 
+    parameters: refractive index nl,
+    front surface curvature Ra,
+    back surface curvature Rb
+    thickness L
+    """
 
     def __init__(self, nl, Ra, Rb, L):
         super().__init__(L)
@@ -122,22 +127,53 @@ class lens(Component):
             print('Not numerically assigned yet.')
             return True
 
-class C_lens(lens):
-    """assume light input at flat surface.
-    less parameter than its parent class.
+class mirror(Component):
+    """A reflection mirror
+    parameter: curvature (> 0 for collimating reflective surface)
     """
 
-    def __init__(self, nl, Rb, L):
-        #super().__init__(nl, Ra, Rb, L)
-        self._M = M7*M2*M1
-        self._index = nl
-        self._R2 = Rb
-        self._thickness = L
+    def __init__(self, Rc):
+        super().__init__(L)
+        self._M = M6
+        self._curvature = Rc
 
     @property
     def Mtx(self):
-        return self._M.subs([(n, self._index), (R2, self._R2), (L, self._thickness)])
+        return self._M.subs(R,self._curvature)
 
+    def  reasonable():
+        try:
+            if self._curvature == 0:
+                return False
+            else:
+                return True
+        except TypeError as e:
+            print("Not numerically assigned...")
+            return True
+
+class GRIN(Component):
+    """A GRIN media. pitch = 0.25 for collimating lens.
+    parameters: pitch
+    """
+
+    def __init__(self, P1):
+        super().__init__(L)
+        self._M = M3*M9*M1
+        self._P = P1
+    @property
+    def Mtx(self):
+        return self._M.subs(P, self._P)
+
+    @property
+    def Pitch(self):
+        return self._P
+
+    def reasonable(self):
+        try:
+            return True if self._P > 0 else False
+        except Exception as e:
+            print('Not numerically assigned yet.')
+            return True
 
 def Calculate(Component, cmd):
     r_e = cmd.lower()
@@ -211,7 +247,7 @@ def main():
 
     print("C-lens...")
     R = Symbol('R')
-    lens1 = C_lens(n1, R, t1)
+    lens1 =  lens(n1, oo, R, t1)
     Calculate(lens1, 'BFL')
 
 if __name__ == '__main__':
